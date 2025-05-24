@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');        // Nieuws titel
             $table->text('content');        // Nieuws inhoud
-            $table->foreignId('user_id')->constrained(); // Wie heeft het nieuws geplaatst
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Wie heeft het nieuws geplaatst
             $table->timestamps();           // Wanneer aangemaakt
         });
     }

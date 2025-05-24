@@ -4,15 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\News;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller as BaseController;
 
-class NewsController extends Controller
+class NewsController extends BaseController
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
+
     /**
      * Toon een lijst van alle nieuwsberichten.
      */
     public function index()
     {
-        $news = News::latest()->paginate(10);
+        $news = News::with('user')
+            ->latest()
+            ->paginate(10);
+
         return view('news.index', compact('news'));
     }
 
@@ -31,17 +41,14 @@ class NewsController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'content' => 'required'
+            'content' => 'required',
         ]);
 
-        $news = News::create([
-            'title' => $validated['title'],
-            'content' => $validated['content'],
-            'user_id' => auth()->id()
-        ]);
+        $news = Auth::user()->news()->create($validated);
 
-        return redirect()->route('news.index')
-            ->with('success', 'Nieuwsbericht succesvol toegevoegd.');
+        return redirect()
+            ->route('news.show', $news)
+            ->with('success', 'Nieuwsbericht succesvol aangemaakt.');
     }
 
     /**
@@ -57,6 +64,7 @@ class NewsController extends Controller
      */
     public function edit(News $news)
     {
+        $this->authorize('update', $news);
         return view('news.edit', compact('news'));
     }
 
@@ -65,14 +73,17 @@ class NewsController extends Controller
      */
     public function update(Request $request, News $news)
     {
+        $this->authorize('update', $news);
+
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'content' => 'required'
+            'content' => 'required',
         ]);
 
         $news->update($validated);
 
-        return redirect()->route('news.index')
+        return redirect()
+            ->route('news.show', $news)
             ->with('success', 'Nieuwsbericht succesvol bijgewerkt.');
     }
 
@@ -81,9 +92,12 @@ class NewsController extends Controller
      */
     public function destroy(News $news)
     {
+        $this->authorize('delete', $news);
+        
         $news->delete();
 
-        return redirect()->route('news.index')
+        return redirect()
+            ->route('news.index')
             ->with('success', 'Nieuwsbericht succesvol verwijderd.');
     }
 }
