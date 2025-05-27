@@ -30,15 +30,27 @@ class NewContactMessageNotification extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
-        $replyToAddress = null;
-        if (filter_var($this->contactMessage->email, FILTER_VALIDATE_EMAIL)) {
-            $replyToAddress = [new Address($this->contactMessage->email, $this->contactMessage->name)];
-        }
-
         return new Envelope(
             subject: 'Nieuw Contactbericht Ontvangen: ' . ($this->contactMessage->subject ?? 'Geen onderwerp'),
-            replyTo: $replyToAddress
+            replyTo: $this->validReplyTo()
         );
+    }
+
+    /**
+     * Valideer het replyTo e-mailadres en retourneer het correcte formaat.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Address>|null
+     */
+    private function validReplyTo(): ?array
+    {
+        $email = $this->contactMessage->email;
+        $name = $this->contactMessage->name;
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return [new Address($email, $name)];
+        }
+
+        return null;
     }
 
     /**

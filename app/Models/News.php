@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class News extends Model
 {
@@ -43,5 +44,13 @@ class News extends Model
         // Foreign key in pivot tabel voor dit model: news_id
         // Foreign key in pivot tabel voor het gerelateerde model: news_category_id
         return $this->belongsToMany(NewsCategory::class, 'news_item_category', 'news_id', 'news_category_id');
+    }
+
+    /**
+     * Haal alle commentaren voor dit nieuwsbericht op.
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->orderBy('created_at', 'desc'); // Nieuwste eerst
     }
 } 

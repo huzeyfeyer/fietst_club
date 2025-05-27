@@ -31,11 +31,11 @@
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ __('Ongelezen Berichten') }}</h3>
-                        <p class="mt-1 text-3xl font-semibold {{ $unreadContactMessages > 0 ? 'text-red-500 dark:text-red-300' : 'text-indigo-600 dark:text-indigo-400' }}">
+                        <p class="mt-1 text-3xl font-semibold {{ $unreadContactMessages > 0 ? 'text-red-500' : 'text-indigo-600' }} dark:text-indigo-400">
                             {{ $unreadContactMessages }}
                         </p>
                         @if ($unreadContactMessages > 0)
-                            <a href="{{ route('admin.contact-messages.index', ['filter_status' => 'unread']) }}" class="text-sm text-blue-600 dark:text-blue-300 hover:underline">{{ __('Bekijken') }}</a>
+                            <a href="{{ route('admin.contact-messages.index', ['filter_status' => 'unread']) }}" class="text-sm text-blue-600 dark:text-indigo-400 hover:underline">{{ __('Bekijken') }}</a>
                         @endif
                     </div>
                 </div>

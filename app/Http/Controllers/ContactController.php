@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewContactMessageNotification;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
@@ -36,6 +37,8 @@ class ContactController extends Controller
             'subject' => 'nullable|string|max:255',
             'message' => 'required|string|min:10', // Minimale lengte voor een bericht
         ]);
+
+        Log::debug('Contactformulier validatie succesvol. Data:', $validated);
 
         $contactMessage = ContactMessage::create($validated);
 
