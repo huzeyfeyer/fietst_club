@@ -13,6 +13,8 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ContactController;
 use App\Models\News;
+use App\Http\Controllers\FaqSuggestionController;
+use App\Http\Controllers\Admin\FaqSuggestionController as AdminFaqSuggestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +79,12 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
 
     // Admin Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Beheer van FAQ Suggesties door admin
+    Route::resource('faq-suggestions', AdminFaqSuggestionController::class)->except(['create', 'store', 'show', 'edit']); // We gebruiken alleen index, update (voor status/notes), destroy
+    Route::patch('faq-suggestions/{faq_suggestion}/approve', [AdminFaqSuggestionController::class, 'approve'])->name('faq-suggestions.approve');
+    Route::patch('faq-suggestions/{faq_suggestion}/reject', [AdminFaqSuggestionController::class, 'reject'])->name('faq-suggestions.reject');
+
 });
 
 // Publieke profielpagina
@@ -88,5 +96,8 @@ Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 // Contactformulier
 Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+// FAQ Suggestie door gebruiker
+Route::post('/faq/suggest', [FaqSuggestionController::class, 'store'])->name('faq.suggest')->middleware('auth');
 
 require __DIR__.'/auth.php';
