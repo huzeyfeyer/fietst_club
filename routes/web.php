@@ -15,6 +15,7 @@ use App\Http\Controllers\ContactController;
 use App\Models\News;
 use App\Http\Controllers\FaqSuggestionController;
 use App\Http\Controllers\Admin\FaqSuggestionController as AdminFaqSuggestionController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Commentaar opslaan voor een nieuwsbericht
+    Route::post('/news/{news}/comments', [CommentController::class, 'store'])->name('comments.store');
 });
 
 Route::controller(NewsController::class)->group(function () {

@@ -81,6 +81,59 @@
                             </div>
                         @endauth
                     </article>
+
+                    {{-- Commentaar Sectie --}}
+                    <div class="mt-12 border-t border-gray-200 dark:border-gray-700 pt-8">
+                        <h3 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-100">Commentaren ({{ $news->comments->count() }})</h3>
+
+                        {{-- Formulier om nieuwe commentaar te plaatsen (alleen voor ingelogde gebruikers) --}}
+                        @auth
+                            <form action="{{ route('comments.store', $news) }}" method="POST" class="mb-8">
+                                @csrf
+                                <div class="mb-4">
+                                    <label for="comment_content" class="sr-only">{{ __('Uw commentaar') }}</label>
+                                    <textarea name="content" id="comment_content" rows="4"
+                                              class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:placeholder-gray-500 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm @error('content') border-red-500 dark:border-red-400 @enderror"
+                                              placeholder="{{ __('Schrijf uw commentaar hier...') }}" required minlength="3" maxlength="2000">{{ old('content') }}</textarea>
+                                    @error('content')
+                                        <p class="text-red-500 dark:text-red-400 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                                    {{ __('Plaats Commentaar') }}
+                                </button>
+                            </form>
+                        @else
+                            <p class="mb-8 text-gray-600 dark:text-gray-400">
+                                <a href="{{ route('login') }}" class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold">{{ __('Log in') }}</a> {{ __('om een commentaar te plaatsen.') }}
+                            </p>
+                        @endauth
+
+                        {{-- Lijst van bestaande commentaren --}}
+                        @if ($news->comments->isNotEmpty())
+                            <div class="space-y-6">
+                                @foreach ($news->comments as $comment)
+                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow">
+                                        <div class="flex items-center mb-2">
+                                            @if($comment->user && $comment->user->profile_photo_path)
+                                                <img src="{{ asset('storage/' . $comment->user->profile_photo_path) }}" alt="{{ $comment->user->name }}" class="w-8 h-8 rounded-full mr-2 object-cover">
+                                            @elseif($comment->user)
+                                                <div class="w-8 h-8 rounded-full mr-2 bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm text-gray-700 dark:text-gray-200 font-semibold">
+                                                    {{ strtoupper(substr($comment->user->name, 0, 1)) }}
+                                                </div>
+                                            @endif
+                                            <span class="font-semibold text-gray-800 dark:text-gray-100">{{ $comment->user->name ?? __('Anonieme Gebruiker') }}</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">{{ $comment->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ $comment->content }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-gray-600 dark:text-gray-400">{{ __('Er zijn nog geen commentaren voor dit nieuwsbericht.') }}</p>
+                        @endif
+                    </div>
+
                 </div>
             </div>
         </div>
