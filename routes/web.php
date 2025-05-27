@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ContactController;
+use App\Models\News;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,11 @@ use App\Http\Controllers\ContactController;
 */
 
 Route::get('/', function () {
-    return view('home');
+    $latestNews = News::with('user')
+                        ->latest()
+                        ->take(3)
+                        ->get();
+    return view('home', ['latestNews' => $latestNews]);
 })->name('home');
 
 Route::get('/dashboard', function () {

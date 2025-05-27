@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ $news->title }}
             </h2>
-            <a href="{{ route('news.index') }}" class="text-blue-500 hover:underline">
+            <a href="{{ route('news.index') }}" class="text-blue-500 dark:text-blue-400 hover:underline">
                 ← Terug naar overzicht
             </a>
         </div>
@@ -32,10 +32,12 @@
                                 <span class="mx-2">•</span>
                                 <span class="flex items-center">
                                     Door:
-                                    <a href="{{ route('users.profile.show', $news->user) }}" class="flex items-center ml-1 hover:underline">
-                                        <img src="{{ $news->user && $news->user->profile_photo_path ? asset('storage/' . $news->user->profile_photo_path) : asset('images/placeholder-profile.png') }}" 
-                                             alt="{{ $news->user->name }}" 
-                                             class="w-6 h-6 rounded-full mr-1.5 object-cover">
+                                    <a href="{{ route('users.profile.show', $news->user) }}" class="flex items-center ml-1 text-gray-700 dark:text-indigo-400 hover:underline">
+                                        @if($news->user && $news->user->profile_photo_path)
+                                            <img src="{{ asset('storage/' . $news->user->profile_photo_path) }}" 
+                                                 alt="{{ $news->user->name }}" 
+                                                 class="w-6 h-6 rounded-full mr-1.5 object-cover">
+                                        @endif
                                         {{ $news->user->display_name ?? $news->user->name }}
                                     </a>
                                 </span>
@@ -61,8 +63,8 @@
                             <div class="mt-8 flex space-x-4">
                                 @can('update', $news)
                                     <a href="{{ route('news.edit', $news) }}" 
-                                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                                        Bewerken
+                                        class="px-4 py-2 rounded font-semibold text-xs text-white uppercase tracking-widest bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                                        {{ __('Bewerken') }}
                                     </a>
                                 @endcan
 
@@ -71,8 +73,8 @@
                                         onsubmit="return confirm('Weet je zeker dat je dit bericht wilt verwijderen?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                                            Verwijderen
+                                        <button type="submit" class="px-4 py-2 rounded font-semibold text-xs text-white uppercase tracking-widest bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                                            {{ __('Verwijderen') }}
                                         </button>
                                     </form>
                                 @endcan

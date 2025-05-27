@@ -8,10 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\View\View;
 
 class NewsController extends BaseController
 {
+    use AuthorizesRequests;
+
     public function __construct()
     {
         $this->middleware('auth')->only(['create', 'store', 'edit', 'update', 'destroy']);
