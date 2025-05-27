@@ -6,6 +6,7 @@ use App\Models\ContactMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -29,9 +30,14 @@ class NewContactMessageNotification extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
+        $replyToAddress = null;
+        if (filter_var($this->contactMessage->email, FILTER_VALIDATE_EMAIL)) {
+            $replyToAddress = [new Address($this->contactMessage->email, $this->contactMessage->name)];
+        }
+
         return new Envelope(
-            subject: 'Nieuw Contactbericht Ontvangen: ' . $this->contactMessage->subject ?: 'Nieuw Contactbericht',
-            replyTo: [$this->contactMessage->email => $this->contactMessage->name]
+            subject: 'Nieuw Contactbericht Ontvangen: ' . ($this->contactMessage->subject ?? 'Geen onderwerp'),
+            replyTo: $replyToAddress
         );
     }
 

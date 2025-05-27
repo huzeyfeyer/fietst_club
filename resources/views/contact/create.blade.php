@@ -10,14 +10,6 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
                     
-                    {{-- Succesbericht na verzenden --}}
-                    @if (session('success'))
-                        <div class="mb-6 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 px-4 py-3 rounded relative" role="alert">
-                            <strong class="font-bold">{{ __('Gelukt!') }}</strong>
-                            <span class="block sm:inline">{{ session('success') }}</span>
-                        </div>
-                    @endif
-
                     <form action="{{ route('contact.store') }}" method="POST">
                         @csrf
 
