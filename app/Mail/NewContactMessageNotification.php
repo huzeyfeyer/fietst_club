@@ -10,6 +10,7 @@ use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class NewContactMessageNotification extends Mailable implements ShouldQueue
 {
@@ -30,6 +31,7 @@ class NewContactMessageNotification extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
+        // Hersteld om validReplyTo() te gebruiken
         return new Envelope(
             subject: 'Nieuw Contactbericht Ontvangen: ' . ($this->contactMessage->subject ?? 'Geen onderwerp'),
             replyTo: $this->validReplyTo()
@@ -39,18 +41,29 @@ class NewContactMessageNotification extends Mailable implements ShouldQueue
     /**
      * Valideer het replyTo e-mailadres en retourneer het correcte formaat.
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Address>|null
+     * @return array<int, \\Illuminate\\Mail\\Mailables\\Address>|null
      */
     private function validReplyTo(): ?array
     {
-        $email = $this->contactMessage->email;
-        $name = $this->contactMessage->name;
+        $email = trim($this->contactMessage->email);
+        $name = trim($this->contactMessage->name);
 
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return [new Address($email, $name)];
+        // Loggen van de waarden die we gaan gebruiken
+        Log::debug('validReplyTo in NewContactMessageNotification wordt uitgevoerd met:', [
+            'raw_email' => $this->contactMessage->email,
+            'trimmed_email' => $email,
+            'raw_name' => $this->contactMessage->name,
+            'trimmed_name' => $name,
+        ]);
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Log::warning("Ongeldig reply-to e-mailadres in NewContactMessageNotification (na trim): {$email}. Oorspronkelijk: " . $this->contactMessage->email);
+            return null; // Geen replyTo als e-mail ongeldig is
         }
 
-        return null;
+        // Retourneer een array met een Address object.
+        // Als $name leeg is na trimmen, wordt null gebruikt voor de naam in het Address object, wat geldig is.
+        return [new Address($email, $name ?: null)];
     }
 
     /**
@@ -66,7 +79,7 @@ class NewContactMessageNotification extends Mailable implements ShouldQueue
     /**
      * Get the attachments for the message.
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array<int, \\Illuminate\\Mail\\Mailables\\Attachment>
      */
     public function attachments(): array
     {
